@@ -1,0 +1,36 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id    String  @id @default(uuid()) // UUID as the primary key
+  name  String
+  email String @unique
+  todos MainToDo[]  // Relationship to MainToDo
+}
+
+model MainToDo {
+  id               String    @id @default(uuid())
+  date             DateTime
+  content          String
+  status           Boolean
+  isSubToDoExists  Boolean
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  subToDos         SubToDo[] // Corrected naming for relation
+
+}
+
+model SubToDo {
+  id          String   @id @default(uuid())
+  date        DateTime
+  content     String
+  status      Boolean
+  mainToDoId  String
+  mainToDo    MainToDo @relation(fields: [mainToDoId], references: [id])
+}
